@@ -4,10 +4,17 @@ const router = express.Router();
 
 router.post("/interactions", (req, res) => {
 
-    console.log("Interaction received");
+    console.log(req.body);
+
+    // Discord Ping
+    if (req.body.type === 1) {
+        return res.json({
+            type: 1
+        });
+    }
 
     res.json({
-        message: "Interaction endpoint working"
+        message: "Interaction received"
     });
 
 });
