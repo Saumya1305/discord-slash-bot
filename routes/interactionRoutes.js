@@ -3,13 +3,12 @@ const { verifyKey } = require("discord-interactions");
 
 const router = express.Router();
 
-router.post(
-  "/interactions",
-  express.raw({ type: "application/json" }),
-  (req, res) => {
+// Notice express.raw is removed from this line now
+router.post("/interactions", (req, res) => {
     const signature = req.get("X-Signature-Ed25519");
     const timestamp = req.get("X-Signature-Timestamp");
 
+    // Capture the raw body sent from server.js
     const rawBody = req.body.toString("utf8");
 
     const isValid = verifyKey(
@@ -35,7 +34,6 @@ router.post(
         content: "Interaction received!",
       },
     });
-  }
-);
+});
 
 module.exports = router;
