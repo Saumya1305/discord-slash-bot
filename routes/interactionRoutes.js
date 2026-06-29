@@ -1,3 +1,5 @@
+console.log("BODY TYPE:", typeof req.body);
+console.log("IS BUFFER:", Buffer.isBuffer(req.body));
 const express = require("express");
 const { verifyKey } = require("discord-interactions");
 
@@ -25,7 +27,7 @@ router.post("/interactions", (req, res) => {
     const body = JSON.parse(rawBody);
 
     if (body.type === 1) {
-      return res.status(200).json({ type: 1 });
+      return res.status(200).json({ ok: true });
     }
 
     return res.status(200).json({
