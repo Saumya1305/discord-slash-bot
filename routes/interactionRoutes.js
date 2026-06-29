@@ -13,6 +13,34 @@ router.post(
   (req, res) => {
     const interaction = req.body;
 
+    if (interaction.type === InteractionType.APPLICATION_COMMAND) {
+
+    const commandName = interaction.data.name;
+
+    if (commandName === "status") {
+        return res.send({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                content: "✅ Bot is running!"
+            }
+        });
+    }
+
+    if (commandName === "report") {
+
+        const reportMessage = interaction.data.options[0].value;
+
+        console.log("Report:", reportMessage);
+
+        return res.send({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                content: "✅ Report received!"
+            }
+        });
+    }
+}
+
     console.log(interaction);
 
     if (interaction.type === InteractionType.APPLICATION_COMMAND) {
