@@ -1,23 +1,41 @@
 const express = require("express");
-const verifyDiscord = require("../middleware/verifyDiscord");
+const { verifyKey } = require("discord-interactions");
 
 const router = express.Router();
 
-router.post("/interactions", verifyDiscord, (req, res) => {
+router.post(
+  "/interactions",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    const signature = req.get("X-Signature-Ed25519");
+    const timestamp = req.get("X-Signature-Timestamp");
 
-    console.log(req.body);
+    const rawBody = req.body.toString("utf8");
 
-    // Discord PING
-    if (req.body.type === 1) {
-        return res.json({
-            type: 1
-        });
+    const isValid = verifyKey(
+      rawBody,
+      signature,
+      timestamp,
+      process.env.DISCORD_PUBLIC_KEY
+    );
+
+    if (!isValid) {
+      return res.status(401).send("Bad signature");
     }
 
-    res.json({
-        message: "Interaction received"
-    });
+    const body = JSON.parse(rawBody);
 
-});
+    if (body.type === 1) {
+      return res.status(200).json({ type: 1 });
+    }
+
+    return res.status(200).json({
+      type: 4,
+      data: {
+        content: "Interaction received!",
+      },
+    });
+  }
+);
 
 module.exports = router;
