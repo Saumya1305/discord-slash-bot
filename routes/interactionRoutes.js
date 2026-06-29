@@ -1,41 +1,43 @@
-console.log("BODY TYPE:", typeof req.body);
-console.log("IS BUFFER:", Buffer.isBuffer(req.body));
 const express = require("express");
-const { verifyKey } = require("discord-interactions");
+const {
+  verifyKeyMiddleware,
+  InteractionType,
+  InteractionResponseType,
+} = require("discord-interactions");
 
 const router = express.Router();
 
-// Notice express.raw is removed from this line now
-router.post("/interactions", (req, res) => {
-    const signature = req.get("X-Signature-Ed25519");
-    const timestamp = req.get("X-Signature-Timestamp");
+router.post(
+  "/interactions",
+  verifyKeyMiddleware(process.env.DISCORD_PUBLIC_KEY),
+  (req, res) => {
+    const interaction = req.body;
 
-    // Capture the raw body sent from server.js
-    const rawBody = req.body.toString("utf8");
+    console.log(interaction);
 
-    const isValid = verifyKey(
-      rawBody,
-      signature,
-      timestamp,
-      process.env.DISCORD_PUBLIC_KEY
-    );
+    if (interaction.type === InteractionType.APPLICATION_COMMAND) {
 
-    if (!isValid) {
-      return res.status(401).send("Bad signature");
+      if (interaction.data.name === "status") {
+        return res.send({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: "✅ Bot is running!",
+          },
+        });
+      }
+
+      if (interaction.data.name === "report") {
+        return res.send({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: "✅ Report received!",
+          },
+        });
+      }
     }
 
-    const body = JSON.parse(rawBody);
-
-    if (body.type === 1) {
-      return res.status(200).json({ ok: true });
-    }
-
-    return res.status(200).json({
-      type: 4,
-      data: {
-        content: "Interaction received!",
-      },
-    });
-});
+    return res.sendStatus(400);
+  }
+);
 
 module.exports = router;
