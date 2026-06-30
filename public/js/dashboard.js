@@ -11,7 +11,15 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 
 async function loadInteractions() {
 
-    const response = await fetch("/interactions");
+    const response = await fetch("/interactions", {
+
+    headers: {
+
+        Authorization: `Bearer ${token}`
+
+    }
+
+});
 
     const interactions = await response.json();
 
@@ -37,7 +45,15 @@ async function loadInteractions() {
 
 async function loadSettings() {
 
-    const response = await fetch("/settings");
+    const response = await fetch("/settings", {
+
+    headers: {
+
+        Authorization: `Bearer ${token}`
+
+    }
+
+});
 
     const settings = await response.json();
 
@@ -54,23 +70,27 @@ document.getElementById("saveSettings")
 
     await fetch("/settings", {
 
-        method: "POST",
+    method: "POST",
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+    headers: {
 
-        body: JSON.stringify({
+        "Content-Type": "application/json",
 
-            auto_reply:
-                document.getElementById("autoReply").checked,
+        Authorization: `Bearer ${token}`
 
-            mirror_notification:
-                document.getElementById("mirrorNotification").checked
+    },
 
-        })
+    body: JSON.stringify({
 
-    });
+        auto_reply:
+            document.getElementById("autoReply").checked,
+
+        mirror_notification:
+            document.getElementById("mirrorNotification").checked
+
+    })
+
+});
 
     alert("Settings Updated!");
 

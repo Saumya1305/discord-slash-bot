@@ -1,4 +1,5 @@
 const express = require("express");
+const verifyToken = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -8,10 +9,22 @@ const {
     updateSettings
 } = require("../controllers/dashboardController");
 
-router.get("/interactions", getInteractions);
+router.get(
+    "/interactions",
+    verifyToken,
+    getInteractions
+);
 
-router.get("/settings", getSettings);
+router.get(
+    "/settings",
+    verifyToken,
+    getSettings
+);
 
-router.post("/settings", updateSettings);
+router.post(
+    "/settings",
+    verifyToken,
+    updateSettings
+);
 
 module.exports = router;
