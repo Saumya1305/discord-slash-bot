@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Dashboard</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <button id="logoutBtn" class="logout-btn">
+        Logout
+    </button>
+
+    <h1>🤖 Discord Slash Command Bot</h1>
+
+    <p class="subtitle">
+        Admin Dashboard
+    </p>
+
+    <div class="section">
+
+        <h2>⚙️ Command Settings</h2>
+
+        <label>
+            <input type="checkbox" id="autoReply">
+            Auto Reply
+        </label>
+
+        <label>
+            <input type="checkbox" id="mirrorNotification">
+            Mirror Notification
+        </label>
+
+        <br>
+
+        <button id="saveSettings" class="save-btn">
+            Save Settings
+        </button>
+
+    </div>
+
+    <div class="section">
+
+        <h2>📋 Recent Reports</h2>
+
+        <table>
+
+            <thead>
+
+            <tr>
+
+                <th>User</th>
+                <th>Command</th>
+                <th>Message</th>
+                <th>Response</th>
+                <th>Time</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody id="interactionTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script src="js/dashboard.js"></script>
+
+</body>
+
+</html>
