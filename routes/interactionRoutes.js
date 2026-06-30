@@ -1,5 +1,6 @@
 const express = require("express");
 const pool = require("../config/db");
+const sendWebhook = require("../services/webhookService");
 
 const {
   verifyKeyMiddleware,
@@ -58,6 +59,7 @@ router.post(
         ]
       );
 
+      await sendWebhook(username, reportMessage);
       console.log("Saved report:", reportMessage);
 
       return res.send({
