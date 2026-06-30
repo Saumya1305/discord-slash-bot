@@ -1,4 +1,6 @@
 const express = require("express");
+const pool = require("../config/db");
+
 const {
   verifyKeyMiddleware,
   InteractionType,
@@ -10,61 +12,64 @@ const router = express.Router();
 router.post(
   "/interactions",
   verifyKeyMiddleware(process.env.DISCORD_PUBLIC_KEY),
-  (req, res) => {
+  async (req, res) => {
+
     const interaction = req.body;
 
-    if (interaction.type === InteractionType.APPLICATION_COMMAND) {
+    if (interaction.type !== InteractionType.APPLICATION_COMMAND) {
+      return res.sendStatus(400);
+    }
 
     const commandName = interaction.data.name;
 
+    // ---------------- STATUS ----------------
+
     if (commandName === "status") {
-        return res.send({
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                content: "✅ Bot is running!"
-            }
-        });
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: "✅ Bot is running!",
+        },
+      });
     }
+
+    // ---------------- REPORT ----------------
 
     if (commandName === "report") {
 
-        const reportMessage = interaction.data.options[0].value;
+      const reportMessage = interaction.data.options[0].value;
 
-        console.log("Report:", reportMessage);
+      const interactionId = interaction.id;
 
-        return res.send({
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                content: "✅ Report received!"
-            }
-        });
-    }
-}
+      const username = interaction.member.user.username;
 
-    console.log(interaction);
+      await pool.query(
+        `
+        INSERT INTO interactions
+        (interaction_id, username, command, message, response)
+        VALUES ($1, $2, $3, $4, $5)
+        `,
+        [
+          interactionId,
+          username,
+          "report",
+          reportMessage,
+          "Report received",
+        ]
+      );
 
-    if (interaction.type === InteractionType.APPLICATION_COMMAND) {
+      console.log("Saved report:", reportMessage);
 
-      if (interaction.data.name === "status") {
-        return res.send({
-          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            content: "✅ Bot is running!",
-          },
-        });
-      }
-
-      if (interaction.data.name === "report") {
-        return res.send({
-          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            content: "✅ Report received!",
-          },
-        });
-      }
+      return res.send({
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: "✅ Report received!",
+        },
+      });
     }
 
     return res.sendStatus(400);
+
   }
 );
 
