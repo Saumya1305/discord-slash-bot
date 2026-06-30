@@ -1,4 +1,5 @@
 require("dotenv").config();
+const pool = require("./config/db");
 
 const express = require("express");
 const cors = require("cors");
@@ -6,6 +7,15 @@ const cors = require("cors");
 const interactionRoutes = require("./routes/interactionRoutes");
 
 const app = express();
+
+pool.connect()
+    .then(() => {
+        console.log("✅ Connected to Supabase PostgreSQL");
+    })
+    .catch((err) => {
+        console.error("❌ Database Connection Failed");
+        console.error(err);
+    });
 
 app.use(cors());
 
